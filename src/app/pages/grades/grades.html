@@ -1,0 +1,100 @@
+<div class="space-y-8">
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">ผลการเรียนและเกรดเฉลี่ย (Grades & GPAX)</h1>
+      <p class="text-slate-500 mt-1">ผลการศึกษาแยกตามรายภาคการศึกษา เกรดเฉลี่ยประจำภาค เกรดสะสม และ GPAX ทั้งหมด</p>
+    </div>
+    <div class="flex gap-3">
+      <button class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+        ขอใบระเบียนผลการเรียน (Transcript)
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Overview Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-slate-500 mb-1">เกรดเฉลี่ยสะสม (GPAX)</p>
+        <p class="text-3xl font-extrabold text-blue-600">{{ gpax }}</p>
+      </div>
+      <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-slate-500 mb-1">หน่วยกิตสะสมรวม</p>
+        <p class="text-3xl font-extrabold text-slate-800">{{ totalCredits }} <span class="text-base font-normal text-slate-400">หน่วยกิต</span></p>
+      </div>
+      <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-slate-500 mb-1">สถานภาพทางการศึกษา</p>
+        <p class="text-lg font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl inline-block mt-1">{{ academicStatus }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ปุ่มเลือกเทอม -->
+  <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm w-fit">
+    <button (click)="selectSemester('current')" [ngClass]="selectedSemester === 'current' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer">เทอมปัจจุบัน (1/2569)</button>
+    <button (click)="selectSemester('term2_68')" [ngClass]="selectedSemester === 'term2_68' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer">เทอม 2/2568</button>
+    <button (click)="selectSemester('term1_68')" [ngClass]="selectedSemester === 'term1_68' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer">เทอม 1/2568</button>
+    <button (click)="selectSemester('summer_68')" [ngClass]="selectedSemester === 'summer_68' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-50 text-purple-700 border border-purple-200/60 hover:bg-purple-100'" class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer">เทอม 3/2568 (ภาคฤดูร้อน)</button>
+    <button (click)="selectSemester('all')" [ngClass]="selectedSemester === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all ml-2 border-l border-slate-200 cursor-pointer">📂 แสดงทั้งหมด</button>
+  </div>
+
+  <!-- พื้นแสดงผล (วนลูปเรนเดอร์แต่ละเทอมอัตโนมัติ) -->
+  <div class="space-y-6 min-h-[450px]">
+    <div *ngFor="let sem of semestersData" 
+         [hidden]="selectedSemester !== 'all' && selectedSemester !== sem.key"
+         class="bg-white rounded-3xl shadow-sm border overflow-hidden transition-all"
+         [ngClass]="sem.borderClass">
+      
+      <!-- Header เทอม -->
+      <div class="p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4" [ngClass]="sem.headerBg">
+        <div>
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg" [ngClass]="sem.badgeClass">{{ sem.badge }}</span>
+          <h2 class="text-xl font-bold text-slate-800 mt-1">{{ sem.title }}</h2>
+        </div>
+        <div class="flex items-center gap-4 text-sm font-semibold text-slate-600">
+          <div class="bg-white px-4 py-2 rounded-xl border border-slate-200/60 shadow-sm">GPA ประจำภาค: <span class="text-blue-600 font-bold">{{ sem.gpa }}</span></div>
+          <div class="bg-blue-50 px-4 py-2 rounded-xl border border-blue-100 shadow-sm text-blue-700">GPA สะสม: <span class="font-bold">{{ sem.gpax }}</span></div>
+        </div>
+      </div>
+
+      <!-- ตารางรายวิชาในเทอม -->
+      <div class="overflow-x-auto">
+        <table class="w-full table-fixed text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+              <th class="py-3.5 px-6 w-32">รหัสวิชา</th>
+              <th class="py-3.5 px-6 w-80">ชื่อรายวิชา</th>
+              <th class="py-3.5 px-6 w-56">ชื่ออาจารย์ผู้สอน</th>
+              <th class="py-3.5 px-6 w-24 text-center">Sec</th>
+              <th class="py-3.5 px-6 w-28 text-center">หน่วยกิต</th>
+              <th class="py-3.5 px-6 w-32 text-center">เกรดที่ได้</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700 text-sm">
+            <tr *ngFor="let item of sem.items" class="hover:bg-slate-50/80 transition-colors">
+              <td class="py-4 px-6 font-bold text-blue-600 truncate">{{ item.courseCode }}</td>
+              <td class="py-4 px-6 font-semibold text-slate-800 truncate">{{ item.courseName }}</td>
+              <td class="py-4 px-6 text-slate-600 truncate">{{ item.instructor }}</td>
+              <td class="py-4 px-6 text-center"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg text-xs">{{ item.secNo }}</span></td>
+              <td class="py-4 px-6 text-center">{{ item.credits }}</td>
+              <td class="py-4 px-6 text-center"><span class="px-3 py-1 rounded-lg" [ngClass]="item.gradeClass">{{ item.grade }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

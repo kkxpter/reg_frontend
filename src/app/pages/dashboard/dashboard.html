@@ -1,0 +1,157 @@
+<div class="space-y-8 pb-12">
+  <!-- 1. Hero Welcome Banner -->
+  <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-zinc-900 to-neutral-900 rounded-3xl p-8 lg:p-10 text-white shadow-xl border border-amber-500/20">
+    <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute right-40 top-0 w-60 h-60 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div class="space-y-3">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-amber-500/10 border border-amber-400/30 text-amber-300 rounded-full text-xs font-semibold backdrop-blur-md">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          ภาคการศึกษาที่ 1 / 2569 • ระบบลงทะเบียนเรียนออนไลน์
+        </div>
+        <div>
+          <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight">
+            สวัสดี, {{ student?.firstName || 'กำลังโหลด...' }} {{ student?.lastName || '' }} 👋
+          </h1>
+          <p class="text-slate-300 text-sm mt-1 max-w-xl">ยินดีต้อนรับกลับสู่ระบบทะเบียนและประวัติการศึกษาดิจิทัล คณะวิทยาการสารสนเทศ มหาวิทยาลัยมหาสารคาม</p>
+        </div>
+      </div>
+
+      <!-- Quick Profile Pill -->
+      <div class="flex items-center gap-4 bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur-md">
+        <div class="w-12 h-12 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-lg shadow-inner">
+          {{ student?.firstName ? student.firstName.charAt(0) : 'น' }}
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-medium">รหัสนิสิต</p>
+          <p class="font-mono font-bold text-amber-400 text-base">{{ student?.studentId || '-' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Status & Overview Bar (แสดงสถานภาพ และ สาขาวิชาจริงจาก DB) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Academic Status Card -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-emerald-300 transition-all">
+      <div class="space-y-1">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">สถานภาพทางการศึกษา</p>
+        <div class="mt-1">
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-sm rounded-xl border border-emerald-100 inline-block">
+            🟢 {{ student?.status || 'ปกติ (Active)' }}
+          </span>
+        </div>
+        <p class="text-xs text-slate-500 pt-1">สถานะบัญชีผู้ใช้นิสิตปกติในระบบทะเบียน</p>
+      </div>
+      <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+      </div>
+    </div>
+
+    <!-- Faculty & Major Card (ดึงสาขาวิชาจริงจาก DB มาโชว์) -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-amber-300 transition-all">
+      <div class="space-y-1">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">สาขาวิชา / คณะ</p>
+        <!-- 📌 ดึงชื่อสาขาจากฐานข้อมูลจริง -->
+        <p class="text-base font-black text-slate-800 mt-1">{{ student?.major || 'กำลังโหลด...' }}</p>
+        <p class="text-xs text-amber-700 font-semibold">คณะวิทยาการสารสนเทศ มหาวิทยาลัยมหาสารคาม</p>
+      </div>
+      <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Two-Column Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- ฝั่งซ้าย: เมนูด่วน -->
+    <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-100 p-8 space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">เมนูด่วน (Quick Actions)</h2>
+          <p class="text-xs text-slate-400 mt-0.5">ทางลัดเข้าสู่ระบบบริการการศึกษาที่ใช้งานบ่อย</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a routerLink="/grades" class="p-5 rounded-2xl bg-slate-50 border border-slate-200/60 hover:border-amber-500 hover:bg-amber-50/20 transition-all group flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">📊</div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm group-hover:text-amber-700 transition-colors">ผลการเรียนและเกรด</h3>
+            <p class="text-xs text-slate-500 mt-0.5">ตรวจสอบ GPA แยกตามรายเทอม</p>
+          </div>
+        </a>
+
+        <a routerLink="/schedule" class="p-5 rounded-2xl bg-slate-50 border border-slate-200/60 hover:border-amber-500 hover:bg-amber-50/20 transition-all group flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">📅</div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm group-hover:text-amber-700 transition-colors">ตารางเรียนและถอนวิชา</h3>
+            <p class="text-xs text-slate-500 mt-0.5">ดูตารางสอนและระบบถอนรายวิชา</p>
+          </div>
+        </a>
+
+        <a routerLink="/cart" class="p-5 rounded-2xl bg-slate-50 border border-slate-200/60 hover:border-amber-500 hover:bg-amber-50/20 transition-all group flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">🔍</div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm group-hover:text-amber-700 transition-colors">ค้นหารายวิชา</h3>
+            <p class="text-xs text-slate-500 mt-0.5">ตรวจสอบรายวิชาที่เปิดสอน</p>
+          </div>
+        </a>
+
+        <a routerLink="/profile" class="p-5 rounded-2xl bg-slate-50 border border-slate-200/60 hover:border-amber-500 hover:bg-amber-50/20 transition-all group flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-zinc-200 text-zinc-800 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">👤</div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm group-hover:text-amber-700 transition-colors">ข้อมูลส่วนตัว</h3>
+            <p class="text-xs text-slate-500 mt-0.5">จัดการช่องทางการติดต่อ</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ฝั่งขวา: อาจารย์ที่ปรึกษา & ประกาศ -->
+    <div class="lg:col-span-5 space-y-6">
+      <!-- อาจารย์ที่ปรึกษา Card -->
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <span>👨‍🏫</span> อาจารย์ที่ปรึกษาประจำตัว
+        </h2>
+        <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/60">
+          <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-sm shadow-md border border-amber-500/30">
+            {{ student?.advisor ? student.advisor.charAt(0) : 'ดร' }}
+          </div>
+          <div class="space-y-0.5">
+            <h4 class="font-bold text-slate-800 text-sm">{{ student?.advisor || 'กำลังโหลด...' }}</h4>
+            <p class="text-xs text-amber-700 font-semibold">{{ student?.major || 'กำลังโหลด...' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ข่าวสารและประกาศสำคัญ -->
+      <div class="bg-gradient-to-br from-slate-900 to-zinc-900 rounded-3xl p-6 text-white shadow-sm space-y-4 border border-amber-500/20">
+        <h2 class="text-base font-bold text-amber-300 flex items-center gap-2">
+          <span>📢</span> ประกาศจากงานทะเบียน
+        </h2>
+        <div class="space-y-3 text-xs text-slate-300">
+          <div class="p-3.5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/5 space-y-1">
+            <div class="flex justify-between items-center text-amber-400 font-bold">
+              <span>กำหนดการลงทะเบียนเรียน</span>
+              <span class="text-[10px] text-slate-400">วันนี้</span>
+            </div>
+            <p class="text-slate-300">ระบบเปิดให้บริการค้นหารายวิชาและจัดการตะกร้าลงทะเบียนเรียนภาคการศึกษาที่ 1/2569 แล้ว</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/5 space-y-1">
+            <div class="flex justify-between items-center text-yellow-300 font-bold">
+              <span>เปิดภาคเรียนปกติ</span>
+              <span class="text-[10px] text-slate-400">1 สัปดาห์ที่แล้ว</span>
+            </div>
+            <p class="text-slate-300">นิสิตทุกชั้นปีสามารถเข้าเรียนตามตารางสอนปกติ และตรวจสอบรายชื่อผู้มีสิทธิ์สอบได้</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

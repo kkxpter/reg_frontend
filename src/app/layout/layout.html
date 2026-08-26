@@ -1,0 +1,94 @@
+<div class="flex h-screen bg-slate-50 font-sans overflow-hidden select-none">
+  
+  <!-- Sidebar (ธีมเทาเข้มดุดัน ตัดทองเหลืองพรีเมียม) -->
+  <aside class="w-64 bg-[#0b0f15] text-slate-400 flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-20 border-r border-slate-800/80">
+    <!-- Logo -->
+    <div class="h-20 flex items-center px-6 bg-[#07090e] text-white font-extrabold text-xl tracking-wider border-b border-slate-800/80 relative overflow-hidden">
+      <div class="absolute -right-6 -top-6 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+      <span class="text-amber-400 mr-2 font-black">REG</span>SYSTEM
+    </div>
+    
+    <!-- Navigation Links -->
+    <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1.5 custom-scrollbar">
+      <a routerLink="/dashboard" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        แดชบอร์ด
+      </a>
+      <a routerLink="/search" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        ค้นหาวิชาเรียน
+      </a>
+      <a routerLink="/cart" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        ลงทะเบียนเรียน
+      </a>
+      <a routerLink="/schedule" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        ตารางเรียน / ถอน
+      </a>
+      <a routerLink="/grades" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        ผลการเรียน
+      </a>
+      <a routerLink="/profile" routerLinkActive="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20" class="flex items-center px-4 py-3.5 rounded-2xl hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer group">
+        <svg class="w-5 h-5 mr-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        ข้อมูลส่วนตัว
+      </a>
+    </nav>
+    
+    <!-- Logout Button -->
+    <div class="p-4 border-t border-slate-800/80 bg-[#07090e]">
+      <a routerLink="/login" class="flex items-center px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all cursor-pointer font-semibold text-sm">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        ออกจากระบบ
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden relative">
+    
+    <!-- Topbar -->
+    <header class="h-20 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 flex items-center justify-between px-8 z-10 shadow-sm">
+      <!-- ฝั่งซ้าย: สถานะระบบ / แจ้งเตือนภาคการศึกษา -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3.5 py-1.5 bg-amber-50 border border-amber-200/80 text-amber-800 rounded-xl text-xs font-bold shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+          <span>ภาคการศึกษา 1/2569</span>
+        </div>
+        <span class="hidden md:inline-block text-xs font-medium text-slate-400">| คณะวิทยาการสารสนเทศ มมส</span>
+      </div>
+      
+      <!-- ฝั่งขวา: ปุ่มแจ้งเตือนด่วน + ข้อมูลโปรไฟล์ผู้ใช้ (ดึงจากฐานข้อมูลจริง) -->
+      <div class="flex items-center gap-4">
+        <!-- ปุ่มกระดิ่งแจ้งเตือน -->
+        <button class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all relative">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+        </button>
+
+        <!-- ข้อมูลผู้ใช้ดึงจาก DB -->
+        <div class="flex items-center gap-3.5 pl-4 border-l border-slate-200 cursor-pointer group">
+          <div class="text-right hidden md:block">
+            <!-- 📌 ดึงชื่อ-นามสกุลจริงจาก Database -->
+            <p class="text-sm font-bold text-slate-800 group-hover:text-amber-600 transition-colors">
+              {{ student?.firstName || 'กำลังโหลด...' }} {{ student?.lastName || '' }}
+            </p>
+            <!-- 📌 ดึงรหัสนิสิตจริงจาก Database -->
+            <p class="text-xs text-slate-500 font-mono">{{ student?.studentId || '-' }}</p>
+          </div>
+          <div class="w-11 h-11 bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black rounded-2xl flex items-center justify-center shadow-md shadow-amber-500/20 border border-amber-300/30">
+            <!-- 📌 ดึงตัวอักษรแรกของชื่อมาโชว์ใน Avatar -->
+            {{ student?.firstName ? student.firstName.charAt(0) : 'น' }}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Outlet -->
+    <main class="flex-1 overflow-y-auto p-6 lg:p-10 bg-slate-50">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

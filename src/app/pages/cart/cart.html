@@ -1,0 +1,180 @@
+<div class="space-y-8 pb-12">
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">ระบบลงทะเบียนเรียน (Course Registration)</h1>
+      <p class="text-slate-500 mt-1">ค้นหาจากรายวิชาที่เปิดสอน ตรวจสอบเวลาเรียน และจัดการตะกร้าลงทะเบียนประจำเทอม</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="bg-amber-50 text-amber-900 px-4 py-2.5 rounded-2xl font-semibold text-sm border border-amber-200/80 shadow-sm flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+        หน่วยกิตในตะกร้า: <span class="text-amber-700 font-extrabold text-base">{{ totalCredits }} / 22</span> นก.
+      </div>
+    </div>
+  </div>
+
+  <!-- ส่วนที่ 1: ค้นหาและตารางรายวิชา -->
+  <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          รายชื่อรายวิชาที่เปิดสอน
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">ค้นหารหัสวิชา หรือชื่อวิชาเพื่อเลือกเพิ่มลงตะกร้า</p>
+      </div>
+      
+      <!-- Search Box -->
+      <div class="flex flex-wrap gap-2 w-full md:w-auto">
+        <div class="relative w-full md:w-72">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </span>
+          <!-- ผูกช่องค้นหากับตัวแปร searchText -->
+          <input type="text" [(ngModel)]="searchText" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 transition-all placeholder:text-slate-400" placeholder="รหัส หรือ ชื่อวิชา...">
+        </div>
+      </div>
+    </div>
+
+    <!-- ตารางรายวิชาแบบ Scroll ได้ -->
+    <div class="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-inner">
+      <div class="max-h-[460px] overflow-y-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[900px]">
+          <thead class="sticky top-0 bg-slate-900 text-white text-xs font-bold uppercase tracking-wider z-10 shadow-sm">
+            <tr>
+              <th class="py-3.5 px-4 w-[12%]">รหัสวิชา</th>
+              <th class="py-3.5 px-4 w-[28%]">ชื่อรายวิชา</th>
+              <th class="py-3.5 px-4 w-[8%] text-center">Sec</th>
+              <th class="py-3.5 px-4 w-[8%] text-center">นก.</th>
+              <th class="py-3.5 px-4 w-[20%]">วัน / เวลาเรียน</th>
+              <th class="py-3.5 px-4 w-[14%]">อาจารย์ผู้สอน</th>
+              <th class="py-3.5 px-4 w-[10%] text-center">ที่นั่งว่าง</th>
+              <th class="py-3.5 px-4 w-[10%] text-right">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+            <!-- วนลูปแสดงข้อมูลจริงจาก TypeScript (filteredSections) -->
+            <tr *ngFor="let sec of filteredSections" class="hover:bg-amber-50/40 transition-colors">
+              <td class="py-3.5 px-4 font-bold text-amber-700">{{ sec.courseCode }}</td>
+              <td class="py-3.5 px-4 font-semibold text-slate-800">{{ sec.course?.courseName }}</td>
+              <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded text-xs">{{ sec.secNo }}</span></td>
+              <td class="py-3.5 px-4 text-center font-medium">{{ sec.course?.credits }}</td>
+              <td class="py-3.5 px-4 text-xs text-slate-600">{{ sec.scheduleTime }}</td>
+              <td class="py-3.5 px-4 text-xs text-slate-600">{{ sec.instructor }}</td>
+              <td class="py-3.5 px-4 text-center">
+                <span [ngClass]="sec.enrolled >= sec.capacity ? 'text-rose-600 bg-rose-50 border-rose-100' : 'text-emerald-600 bg-emerald-50 border-emerald-100'" class="font-semibold text-xs px-2.5 py-1 rounded-full border inline-block">
+                  {{ sec.enrolled }}/{{ sec.capacity }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                <button *ngIf="sec.enrolled < sec.capacity" (click)="addToCart(sec)" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold rounded-xl shadow-sm shadow-amber-500/20 transition-all hover:-translate-y-0.5 cursor-pointer">+ เพิ่ม</button>
+                <button *ngIf="sec.enrolled >= sec.capacity" class="px-3.5 py-1.5 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl cursor-not-allowed" disabled>เต็ม</button>
+              </td>
+            </tr>
+
+            <!-- กรณีไม่พบข้อมูล -->
+            <tr *ngIf="filteredSections.length === 0">
+              <td colspan="8" class="py-8 text-center text-slate-400">ไม่พบรายวิชาที่ค้นหา</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Info Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+        <span>แสดงผลทั้งหมด {{ filteredSections.length }} รายการ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ส่วนที่ 2: ตะกร้าและสรุปผลการลงทะเบียน -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- รายการวิชาในตะกร้า -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-5">
+        <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800">รายวิชาที่เลือกไว้ในตะกร้า</h2>
+            <p class="text-xs text-slate-400 mt-0.5">ตรวจสอบความถูกต้องก่อนยืนยันการลงทะเบียน</p>
+          </div>
+          <span class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs font-extrabold">{{ cart.length }} วิชา ({{ totalCredits }} นก.)</span>
+        </div>
+
+        <!-- ตารางคอลัมน์รายวิชาในตะกร้า -->
+        <div class="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-inner">
+          <table class="w-full text-left border-collapse min-w-[500px]">
+            <thead class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider">
+              <tr>
+                <th class="py-3.5 px-4 w-[22%]">รหัสวิชา</th>
+                <th class="py-3.5 px-4 w-[40%]">ชื่อรายวิชา</th>
+                <th class="py-3.5 px-4 w-[28%]">วัน / เวลาเรียน</th>
+                <th class="py-3.5 px-4 w-[10%] text-right">ลบ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+              <!-- วนลูปแสดงข้อมูลในตะกร้า (cart) -->
+              <tr *ngFor="let item of cart" class="hover:bg-amber-50/40 transition-colors">
+                <td class="py-3.5 px-4 font-bold text-amber-700">
+                  {{ item.courseCode }} <span class="px-1.5 py-0.5 bg-slate-200 text-slate-700 text-[10px] font-bold rounded ml-1">Sec {{ item.secNo }}</span>
+                </td>
+                <td class="py-3.5 px-4 font-semibold text-slate-800">{{ item.course?.courseName }} <span class="text-xs text-slate-400 font-normal">({{ item.course?.credits }} นก.)</span></td>
+                <td class="py-3.5 px-4 text-xs text-slate-600">{{ item.scheduleTime }}</td>
+                <td class="py-3.5 px-4 text-right">
+                  <button (click)="removeFromCart(item.sectionId)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="ลบออก">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- กรณีตะกร้าว่าง -->
+              <tr *ngIf="cart.length === 0">
+                <td colspan="4" class="py-8 text-center text-slate-400">ยังไม่มีรายวิชาในตะกร้า กรุณากดปุ่ม "+ เพิ่ม" ด้านบน</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- กล่องแจ้งเตือนสถานะการตรวจสอบเงื่อนไข -->
+      <div class="bg-emerald-50 border border-emerald-200/80 rounded-3xl p-6 text-emerald-900 flex items-start gap-4 shadow-sm">
+        <svg class="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="text-sm space-y-1">
+          <p class="font-extrabold">ระบบตรวจสอบความถูกต้องสมบูรณ์:</p>
+          <p>• ตรวจสอบหน่วยกิตรวมไม่เกินลิมิต: <span class="font-bold text-emerald-700">ผ่าน ({{ totalCredits }} / 22 นก.)</span></p>
+          <p>• พร้อมยืนยันบันทึกผลลงฐานข้อมูล Oracle: <span class="font-bold text-emerald-700">พร้อมใช้งาน</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- สรุปผลและการยืนยัน -->
+    <div class="space-y-6">
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 sticky top-6 space-y-6">
+        <h2 class="text-xl font-bold text-slate-800">สรุปการลงทะเบียน</h2>
+        
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between text-slate-600">
+            <span>จำนวนรายวิชา</span>
+            <span class="font-bold text-slate-800">{{ cart.length }} วิชา</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>หน่วยกิตรวมทั้งหมด</span>
+            <span class="font-black text-amber-700 text-lg">{{ totalCredits }} หน่วยกิต</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>ลิมิตสูงสุด</span>
+            <span class="font-medium text-slate-800">22 หน่วยกิต</span>
+          </div>
+        </div>
+
+        <div class="h-px bg-slate-100"></div>
+
+        <!-- ปุ่มยืนยันการลงทะเบียน (ผูกกับฟังก์ชัน confirmRegistration ใน TypeScript) -->
+        <button (click)="confirmRegistration()" class="w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-base rounded-2xl shadow-lg shadow-amber-500/20 transition-all hover:-translate-y-0.5 cursor-pointer">
+          ยืนยันการลงทะเบียนเรียน
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

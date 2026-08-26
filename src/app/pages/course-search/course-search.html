@@ -1,0 +1,103 @@
+<div class="space-y-8 pb-12">
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">ค้นหารายวิชา (Course Search)</h1>
+      <p class="text-slate-500 mt-1">ตรวจสอบรายวิชาที่เปิดให้บริการทั้งหมดในภาคการศึกษาปัจจุบัน (สำหรับตรวจสอบข้อมูล)</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="bg-amber-50 text-amber-900 px-4 py-2.5 rounded-2xl font-semibold text-sm border border-amber-200/80 shadow-sm flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+        เปิดให้บริการ: <span class="text-amber-700 font-extrabold text-base">{{ filteredSections.length }} รายวิชา</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ส่วนค้นหาและตารางรายวิชา -->
+  <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-6">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          รายชื่อรายวิชาทั้งหมด
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">พิมพ์รหัสวิชา หรือชื่อวิชา เพื่อกรองข้อมูลแบบเรียลไทม์</p>
+      </div>
+      
+      <!-- Search Box & Show All Button (ตัด Dropdown หมวดหมู่ออกแล้ว) -->
+      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <div class="relative w-full md:w-80">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </span>
+          <!-- ผูกช่องค้นหากับตัวแปร searchText -->
+          <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage = 1" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 transition-all placeholder:text-slate-400" placeholder="ค้นหารหัส หรือ ชื่อวิชา...">
+        </div>
+
+        <!-- ปุ่มแสดงทั้งหมด -->
+        <button (click)="toggleShowAll()" [ngClass]="isShowingAll ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-5 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm">
+          {{ isShowingAll ? 'แบ่งหน้าปกติ' : 'แสดงทั้งหมด' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ตารางแสดงผลรายวิชา -->
+    <div class="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-inner">
+      <div class="w-full max-h-[580px] overflow-y-auto">
+        <table class="w-full text-left border-collapse min-w-[900px]">
+          <thead class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider sticky top-0 z-10 shadow-sm">
+            <tr>
+              <th class="py-4 px-4 w-[12%]">รหัสวิชา</th>
+              <th class="py-4 px-4 w-[28%]">ชื่อรายวิชา</th>
+              <th class="py-4 px-4 w-[8%] text-center">Sec</th>
+              <th class="py-4 px-4 w-[8%] text-center">นก.</th>
+              <th class="py-4 px-4 w-[20%]">วัน / เวลาเรียน</th>
+              <th class="py-4 px-4 w-[14%]">อาจารย์ผู้สอน</th>
+              <th class="py-4 px-4 w-[10%] text-center">ที่นั่งว่าง</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+            <!-- วนลูปข้อมูลที่ถูกแบ่งหน้าและค้นหาแล้ว (ตัด .section ออกให้ตรงกับโครงสร้างจริง) -->
+            <tr *ngFor="let item of paginatedSections" class="hover:bg-amber-50/40 transition-colors">
+              <!-- ถ้าข้อมูลส่งมาแบบมี .section ครอบ ให้ใช้ item.section?.courseCodeเหมือนเดิม แต่ถ้าไม่มีให้ใช้ item.courseCode -->
+              <td class="py-4 px-4 font-bold text-amber-700">{{ item.section?.courseCode || item.courseCode }}</td>
+              <td class="py-4 px-4 font-semibold text-slate-800">{{ item.section?.course?.courseName || item.courseName }}</td>
+              <td class="py-4 px-4 text-center"><span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded text-xs">{{ item.section?.secNo || item.secNo }}</span></td>
+              <td class="py-4 px-4 text-center font-medium">{{ item.section?.course?.credits || item.credits }}</td>
+              <td class="py-4 px-4 text-xs text-slate-600">{{ item.section?.scheduleTime || item.scheduleTime }}</td>
+              <td class="py-4 px-4 text-xs text-slate-600">{{ item.section?.instructor || item.instructor }}</td>
+              <td class="py-4 px-4 text-center">
+                <span [ngClass]="(item.section?.enrolled || item.enrolled) >= (item.section?.capacity || item.capacity) ? 'text-rose-600 bg-rose-50 border-rose-100' : 'text-emerald-600 bg-emerald-50 border-emerald-100'" class="font-semibold text-xs px-2.5 py-1 rounded-full border inline-block">
+                  {{ item.section?.enrolled || item.enrolled }}/{{ item.section?.capacity || item.capacity }}
+                </span>
+              </td>
+            </tr>
+
+            <!-- กรณีไม่พบข้อมูลที่ค้นหา -->
+            <tr *ngIf="filteredSections.length === 0">
+              <td colspan="7" class="py-8 text-center text-slate-400">ไม่พบรายวิชาที่ค้นหา</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Pagination & Info (ซ่อนตัวเลขหน้าถ้ากดปุ่มแสดงทั้งหมด) -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
+        <span>แสดง {{ startIndex }} ถึง {{ endIndex }} จากทั้งหมด {{ filteredSections.length }} รายการ</span>
+        
+        <div class="flex items-center gap-1" *ngIf="!isShowingAll && totalPages > 1">
+          <!-- ปุ่มก่อนหน้า -->
+          <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" class="px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer">ก่อนหน้า</button>
+          
+          <!-- ปุ่มเลขหน้าแบบไดนามิก (1 2 3...) -->
+          <button *ngFor="let p of pagesArray" (click)="changePage(p)" [ngClass]="currentPage === p ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm shadow-amber-500/20' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'" class="px-3.5 py-2 rounded-xl font-semibold transition-colors">
+            {{ p }}
+          </button>
+
+          <!-- ปุ่มถัดไป -->
+          <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer">ถัดไป</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,147 @@
+<div class="space-y-8">
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <h1 class="text-3xl font-bold text-slate-800 tracking-tight">ตารางเรียนและถอนรายวิชา</h1>
+        <span class="px-3 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-full shadow-sm">
+          เทอมปัจจุบัน: ภาคการศึกษาที่ 1/2569
+        </span>
+      </div>
+      <p class="text-slate-500">ตารางสอนประจำสัปดาห์ และระบบจัดการถอนรายวิชา (W) ในภาคเรียนนี้</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-4 py-2 bg-blue-50 text-blue-700 rounded-2xl font-semibold text-sm border border-blue-100 shadow-sm flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+        หน่วยกิตสะสมเทอมนี้: <span class="text-blue-600 font-bold text-base">{{ totalCredits }} นก.</span>
+      </span>
+      <button onclick="window.print()" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-2xl font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+        พิมพ์ตารางเรียน (PDF)
+      </button>
+    </div>
+  </div>
+
+  <!-- ส่วนที่ 1: ตารางเรียน Matrix รายชั่วโมง (โครงสร้างตารางปกติ เป๊ะ 100%) -->
+  <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
+    <div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <h2 class="text-xl font-bold text-slate-800">ตารางสอนรายสัปดาห์ (ตามเวลาจริง)</h2>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">Semester 1/2569</span>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-inner bg-slate-50/50">
+      <table class="w-full min-w-[1200px] table-fixed border-collapse text-center">
+        <thead>
+          <tr class="bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider">
+            <th class="py-3 px-3 w-32 border-r border-slate-800 text-left">วัน / เวลา</th>
+            <th class="py-3 px-1 border-r border-slate-800">08:00 - 09:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">09:00 - 10:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">10:00 - 11:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">11:00 - 12:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">12:00 - 13:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">13:00 - 14:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">14:00 - 15:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">15:00 - 16:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">16:00 - 17:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">17:00 - 18:00</th>
+            <th class="py-3 px-1 border-r border-slate-800">18:00 - 19:00</th>
+            <th class="py-3 px-1">19:00 - 20:00</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 text-sm bg-white">
+          
+          <tr *ngFor="let day of ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์']" class="h-20 hover:bg-slate-50/80 transition-colors">
+            <td class="py-4 px-3 font-bold text-slate-800 bg-slate-50 border-r border-slate-200 text-left align-middle">วัน{{ day }}</td>
+            
+            <!-- หากไม่มีเรียนในวันนี้ -->
+            <td *ngIf="getRegistrationsByDay(day).length === 0" colspan="12" class="text-slate-300 text-xs">- ไม่มีเรียน -</td>
+
+            <!-- หากมีเรียน -->
+            <ng-container *ngIf="getRegistrationsByDay(day).length > 0">
+              <!-- วนลูปตามรายวิชาในวันนั้น -->
+              <ng-container *ngFor="let item of getRegistrationsByDay(day); let i = index">
+                
+                <!-- คำนวณช่องว่างก่อนเริ่มเรียน (ถ้าเป็นวิชาแรก เทียบกับ 08:00) -->
+                <td *ngIf="i === 0 && getStartHour(item.section?.scheduleTime || '') > 8" 
+                    [attr.colspan]="getStartHour(item.section?.scheduleTime || '') - 8"></td>
+
+                <!-- คำนวณช่องว่างระหว่างวิชา (ถ้ามีวิชาต่อกัน ให้เว้นช่องว่างระหว่างเวลาเลิกกับเวลาเริ่มใหม่) -->
+                <td *ngIf="i > 0 && getStartHour(item.section?.scheduleTime || '') > getPreviousEndHour(getRegistrationsByDay(day)[i-1].section?.scheduleTime || '')" 
+                    [attr.colspan]="getStartHour(item.section?.scheduleTime || '') - getPreviousEndHour(getRegistrationsByDay(day)[i-1].section?.scheduleTime || '')"></td>
+
+                <!-- กล่องแสดงรายวิชา -->
+                <td [attr.colspan]="getDuration(item.section?.scheduleTime || '')" 
+                    class="p-1.5 align-middle text-white rounded-xl shadow-sm"
+                    [ngClass]="{
+                      'bg-blue-600': day === 'จันทร์',
+                      'bg-purple-600': day === 'อังคาร',
+                      'bg-emerald-600': day === 'พุธ',
+                      'bg-amber-600': day === 'พฤหัสบดี',
+                      'bg-rose-600': day === 'ศุกร์'
+                    }">
+                  <div class="text-left flex flex-col justify-center space-y-0.5 px-2">
+                    <span class="text-[10px] font-extrabold bg-black/20 px-1.5 py-0.5 rounded w-fit">{{ item.section?.courseCode }} (Sec {{ item.section?.secNo }})</span>
+                    <p class="font-bold text-xs truncate">{{ item.section?.course?.courseName }}</p>
+                    <p class="text-[11px] opacity-90 font-mono">🕒 {{ item.section?.scheduleTime }}</p>
+                  </div>
+                </td>
+
+              </ng-container>
+            </ng-container>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- ส่วนที่ 2: ตารางจัดการถอนรายวิชา -->
+  <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
+      <div>
+        <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700">เทอมปัจจุบัน</span>
+        <h2 class="text-xl font-bold text-slate-800 mt-1">จัดการถอนรายวิชา ภาคการศึกษาที่ 1/2569</h2>
+      </div>
+      <div class="text-xs font-semibold text-rose-600 bg-rose-50 px-3 py-2 rounded-xl border border-rose-100 shadow-sm">
+        ⚠️ การถอนรายวิชาจะมีผลปรากฏเกรด (W) ในระเบียนสะสม
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full table-fixed text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+            <th class="py-3.5 px-6 w-32">รหัสวิชา</th>
+            <th class="py-3.5 px-6 w-80">ชื่อรายวิชา</th>
+            <th class="py-3.5 px-6 w-56">ชื่ออาจารย์ผู้สอน</th>
+            <th class="py-3.5 px-6 w-24 text-center">Sec</th>
+            <th class="py-3.5 px-6 w-28 text-center">หน่วยกิต</th>
+            <th class="py-3.5 px-6 w-48 text-right">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-slate-700 text-sm">
+          <tr *ngFor="let item of registrations" class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-4 px-6 font-bold text-blue-600 truncate">{{ item.section?.courseCode }}</td>
+            <td class="py-4 px-6 font-semibold text-slate-800 truncate">{{ item.section?.course?.courseName }}</td>
+            <td class="py-4 px-6 text-slate-600 truncate">{{ item.section?.instructor }}</td>
+            <td class="py-4 px-6 text-center"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg text-xs">{{ item.section?.secNo }}</span></td>
+            <td class="py-4 px-6 text-center">{{ item.section?.course?.credits }}</td>
+            <td class="py-4 px-6 text-right">
+              <button *ngIf="selectingWithdrawCode !== item.section?.courseCode" (click)="toggleWithdraw(item.section!.courseCode)" class="px-4 py-2 bg-white border-2 border-rose-500 text-rose-500 hover:bg-rose-500 hover:text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer">
+                🗑️ ถอนรายวิชา
+              </button>
+              <div *ngIf="selectingWithdrawCode === item.section?.courseCode" class="flex items-center justify-end gap-1.5 animate-in fade-in duration-200">
+                <button (click)="toggleWithdraw('')" class="px-2.5 py-1.5 bg-slate-200 text-slate-700 font-bold text-xs rounded-lg cursor-pointer">ยกเลิก</button>
+                <button (click)="confirmWithdraw(item.regId, item.section?.courseCode)" class="px-3 py-1.5 bg-rose-600 text-white font-bold text-xs rounded-lg shadow-sm cursor-pointer">ยืนยัน (W)</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="registrations.length === 0">
+            <td colspan="6" class="py-8 text-center text-slate-400">ยังไม่มีรายวิชาที่ลงทะเบียนในภาคเรียนนี้</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
