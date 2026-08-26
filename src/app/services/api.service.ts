@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:5023/api'; // URL .NET API ของเรา
+  // ใช้ environment หรือถ้าอยู่บน production ให้ดึงจาก Vercel หรือใช้ค่าพื้นฐาน
+private baseUrl = (typeof window !== 'undefined' && (window as any).__env?.apiUrl) || 'https://regbackend-production.up.railway.app/api';
 
   constructor(private http: HttpClient) { }
 
