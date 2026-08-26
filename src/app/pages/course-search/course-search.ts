@@ -28,9 +28,8 @@ export class CourseSearch implements OnInit {
  loadSections() {
     this.apiService.getSections().subscribe({
       next: (data: any) => {
-        // 📌 แปลงข้อมูลที่ได้จาก /api/sections ให้มี property ชื่อ .section ครอบ
-        // เพื่อให้ตรงกับ HTML เดิมที่เขียนดึงไว้ (เช่น item.section?.courseCode)
-        this.sections = data.map((item: any) => ({ section: item }));
+        // 📌 บันทึกข้อมูลลง sections ตรงๆ เลย
+        this.sections = data; 
         console.log('Loaded sections formatted:', this.sections);
       },
       error: (err: any) => {
