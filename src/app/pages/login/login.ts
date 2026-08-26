@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService } from '../../services/api.service'; // 1. นำเข้า ApiService ที่เราสร้างไว้
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +19,7 @@ export class Login {
   // 2. Inject ApiService เข้ามาใน constructor
   constructor(
     private router: Router,
-    private apiService: ApiService 
+    private authService: AuthService
   ) {}
 
   // 3. แก้ไขฟังก์ชัน onLogin ให้เชื่อมต่อกับ .NET API จริง
@@ -32,13 +32,10 @@ export class Login {
     }
 
     // เรียกใช้ API Login ที่เราทำไว้
-    this.apiService.login({ studentId: this.studentId, password: this.password }).subscribe({
+    this.authService.login({ studentId: this.studentId, password: this.password }).subscribe({
       next: (response: any) => {
         console.log('Login Success:', response);
         
-        // บันทึกข้อมูลนักศึกษาลงใน LocalStorage ไว้ใช้ต่อหน้าอื่น (เช่น รหัสนิสิต, ชื่อ)
-        localStorage.setItem('student', JSON.stringify(response.student));
-
         alert('เข้าสู่ระบบสำเร็จ!');
         // พาเด้งไปหน้า Dashboard หรือหน้าลงทะเบียน
         this.router.navigate(['/dashboard']);

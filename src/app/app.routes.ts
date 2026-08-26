@@ -11,6 +11,7 @@ import { Cart } from './pages/cart/cart';
 import { Schedule } from './pages/schedule/schedule';
 import { Grades } from './pages/grades/grades';
 import { Profile } from './pages/profile/profile';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' }, 
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { 
     path: '', 
     component: Layout,
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: Dashboard },
       { path: 'search', component: CourseSearch },

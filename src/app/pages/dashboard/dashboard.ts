@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { Course } from '../../models/student.model';
+import { Course, StudentProfile } from '../../models/student.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,60 +13,44 @@ import { Course } from '../../models/student.model';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
-  student: any = null; 
+  student: StudentProfile | null = null;
   courses: Course[] = [];
-  currentStudentId: string = ''; // 📌 ไม่ต้องฟิกค่าตายตัวแล้ว
+  isProfileLoading = true;
+  profileError = '';
+  isCoursesLoading = true;
+  coursesError = '';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedStudent = localStorage.getItem('student');
-      if (savedStudent) {
-        try {
-          const studentObj = JSON.parse(savedStudent);
-          // ดึงรหัสนิสิตจริงของคนที่เพิ่ง Login เข้ามา
-          this.currentStudentId = studentObj.studentId || studentObj.StudentId || '';
-        } catch (e) {
-          console.error('Error parsing saved student', e);
-        }
-      }
-    }
-
-    // ถ้ามีรหัสนิสิต ให้ยิงไปดึงข้อมูลล่าสุดจาก Database ทันที
-    if (this.currentStudentId) {
-      this.loadStudentProfile();
-    } else {
-      console.warn('ไม่พบรหัสนิสิตในระบบ กรุณาเข้าสู่ระบบใหม่อีกครั้ง');
-    }
+    this.student = this.authService.currentStudent();
+    this.loadStudentProfile();
 
     this.apiService.getCourses().subscribe({
       next: (data: any) => {
         this.courses = data;
+        this.isCoursesLoading = false;
       },
       error: (err: any) => {
         console.error('Failed to load courses', err);
+        this.coursesError = 'ไม่สามารถโหลดรายวิชาได้ กรุณาลองใหม่อีกครั้ง';
+        this.isCoursesLoading = false;
       }
     });
   }
 
   loadStudentProfile() {
-    this.apiService.getStudentProfile(this.currentStudentId).subscribe({
-      next: (data: any) => {
+    this.apiService.getStudentProfile().subscribe({
+      next: (data) => {
         console.log('Dashboard profile loaded from Database:', data);
-        
-        // 📌 ดึงข้อมูลจริงจาก Database มาแสดงผลแบบไดนามิก
-        this.student = {
-          studentId: data.studentId || data.StudentId || this.currentStudentId,
-          firstName: data.firstName || data.FirstName || data.firstNameTh || data.FirstNameTh || '',
-          lastName: data.lastName || data.LastName || data.lastNameTh || data.LastNameTh || '',
-          major: data.major || data.Major || data.majorTh || data.MajorTh || 'วิทยาการคอมพิวเตอร์',
-          status: data.status || data.Status || 'ปกติ (Active)',
-          advisor: data.advisor || data.Advisor || 'ดร. สมชาย ใจดี'
-        };
+        this.student = data;
+        this.authService.updateStudent(data);
+        this.isProfileLoading = false;
       },
       error: (err: any) => {
         console.error('ไม่สามารถดึงข้อมูลโปรไฟล์จาก Database ได้:', err);
+        this.profileError = 'ไม่สามารถโหลดข้อมูลนักศึกษาได้ กรุณาลองใหม่อีกครั้ง';
+        this.isProfileLoading = false;
       }
     });
   }

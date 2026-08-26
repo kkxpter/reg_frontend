@@ -1,4 +1,6 @@
 <div class="space-y-8 pb-12">
+  <div *ngIf="isLoading" class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800 text-sm">กำลังโหลดข้อมูลส่วนตัว...</div>
+  <div *ngIf="errorMessage" class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-700 text-sm">{{ errorMessage }}</div>
   <!-- Header Section พร้อมแบนเนอร์ต้อนรับพรีเมียม -->
   <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-zinc-900 to-neutral-900 rounded-3xl p-8 text-white shadow-xl border border-amber-500/20">
     <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -17,7 +19,7 @@
       <div class="flex items-center gap-3">
         <div class="px-5 py-3 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md text-center">
           <span class="block text-xs text-slate-400">สถานภาพปัจจุบัน</span>
-          <span class="text-emerald-400 font-bold text-sm">🟢 {{ student.status || 'ปกติ (Active)' }}</span>
+            <span class="text-emerald-400 font-bold text-sm">🟢 {{ student?.status || 'กำลังโหลด...' }}</span>
         </div>
       </div>
     </div>
@@ -40,17 +42,17 @@
         <div class="px-6 pb-6 pt-0 relative">
           <div class="flex justify-between items-end -mt-12 mb-4">
             <div class="w-24 h-24 bg-slate-900 text-amber-400 font-black text-2xl rounded-3xl flex items-center justify-center border-4 border-white shadow-lg shadow-amber-500/20">
-              {{ student.firstNameTh ? student.firstNameTh.charAt(0) : 'นศ' }}
+              {{ student?.firstNameTh ? student?.firstNameTh?.charAt(0) : 'นศ' }}
             </div>
             <div class="text-right">
-              <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">{{ student.year || 'ปี 4 (Senior)' }}</span>
+              <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">สถานภาพนิสิต</span>
             </div>
           </div>
 
           <!-- ข้อมูลหลักดึงจาก Database -->
           <div class="space-y-1 mb-6">
-            <h2 class="text-xl font-bold text-slate-800">{{ student.firstNameTh }} {{ student.lastNameTh }}</h2>
-            <p class="text-sm font-bold text-amber-700 font-mono">{{ student.studentId }}</p>
+            <h2 class="text-xl font-bold text-slate-800">{{ student?.firstNameTh }} {{ student?.lastNameTh }}</h2>
+            <p class="text-sm font-bold text-amber-700 font-mono">{{ student?.studentId }}</p>
           </div>
 
           <div class="h-px bg-slate-100 my-4"></div>
@@ -58,15 +60,15 @@
           <div class="space-y-3 text-sm text-slate-600">
             <div class="flex justify-between items-center">
               <span class="text-slate-400 font-medium">คณะ</span>
-              <span class="font-bold text-slate-800">{{ student.faculty || 'วิทยาการสารสนเทศ' }}</span>
+              <span class="font-bold text-slate-800">{{ student?.faculty || '-' }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-slate-400 font-medium">สาขาวิชา</span>
-              <span class="font-bold text-slate-800 text-right">{{ student.major || 'วิทยาการคอมพิวเตอร์ฯ' }}</span>
+              <span class="font-bold text-slate-800 text-right">{{ student?.major || '-' }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-slate-400 font-medium">อาจารย์ที่ปรึกษา</span>
-              <span class="font-bold text-slate-800">{{ student.advisor || 'ดร. สมชาย ใจดี' }}</span>
+              <span class="font-bold text-slate-800">{{ student?.advisor || '-' }}</span>
             </div>
           </div>
         </div>
@@ -91,22 +93,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">รหัสนิสิต</label>
-            <input type="text" [value]="student.studentId" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono font-bold cursor-not-allowed select-none">
+            <input type="text" [value]="student?.studentId" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono font-bold cursor-not-allowed select-none">
           </div>
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">หมายเลขประจำตัวประชาชน</label>
-            <input type="text" [value]="student.nationalId" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono font-bold cursor-not-allowed select-none">
+            <input type="text" [value]="student?.nationalId" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono font-bold cursor-not-allowed select-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">ชื่อ (ภาษาไทย)</label>
-            <input type="text" [value]="student.firstNameTh" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold cursor-not-allowed select-none">
+            <input type="text" [value]="student?.firstNameTh" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold cursor-not-allowed select-none">
           </div>
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">นามสกุล (ภาษาไทย)</label>
-            <input type="text" [value]="student.lastNameTh" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold cursor-not-allowed select-none">
+            <input type="text" [value]="student?.lastNameTh" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold cursor-not-allowed select-none">
           </div>
         </div>
       </div>
@@ -126,22 +128,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">อีเมลมหาวิทยาลัย (ล็อกถาวร)</label>
-            <input type="email" [value]="student.universityEmail" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold font-mono cursor-not-allowed select-none">
+            <input type="email" [value]="student?.universityEmail" disabled class="w-full px-4 py-3.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 font-semibold font-mono cursor-not-allowed select-none">
           </div>
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">อีเมลสำรอง / ส่วนตัว (แก้ไขได้)</label>
-            <input type="email" [(ngModel)]="student.PersonalEmail" name="PersonalEmail" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
+            <input type="email" [(ngModel)]="student!.personalEmail" name="personalEmail" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">เบอร์โทรศัพท์มือถือ</label>
-            <input type="text" [(ngModel)]="student.Phone" name="Phone" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
+            <input type="text" [(ngModel)]="student!.phone" name="phone" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
           </div>
           <div class="space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">จังหวัดที่พำนัก / ที่อยู่ปัจจุบัน</label>
-            <input type="text" [(ngModel)]="student.Province" name="Province" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
+            <input type="text" [(ngModel)]="student!.province" name="province" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white text-slate-800 font-semibold transition-all">
           </div>
         </div>
       </div>
@@ -153,7 +155,7 @@
           <button type="button" class="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-colors text-sm cursor-pointer">
             ยกเลิก
           </button>
-          <button type="button" (click)="saveProfile()" class="px-8 py-3.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black rounded-2xl shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 text-sm cursor-pointer">
+          <button type="button" (click)="saveProfile()" [disabled]="!student || isLoading" class="px-8 py-3.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black rounded-2xl shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 text-sm cursor-pointer disabled:opacity-50">
             บันทึกการเปลี่ยนแปลง
           </button>
         </div>

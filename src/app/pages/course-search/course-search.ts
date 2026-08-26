@@ -18,6 +18,8 @@ export class CourseSearch implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   isShowingAll: boolean = false;
+  isLoading = true;
+  errorMessage = '';
 
   constructor(private apiService: ApiService) {}
 
@@ -30,10 +32,13 @@ export class CourseSearch implements OnInit {
       next: (data: any) => {
         // 📌 แก้จากเดิมที่เป็น map ห่อ { section: item } ให้ใช้ data ตรงๆ แบบนี้เลยครับ!
         this.sections = data; 
+        this.isLoading = false;
         console.log('Loaded sections:', data);
       },
       error: (err: any) => {
         console.error('Failed to load sections', err);
+        this.errorMessage = 'ไม่สามารถโหลดรายวิชาได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoading = false;
       }
     });
   }

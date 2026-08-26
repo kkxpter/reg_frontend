@@ -1,11 +1,26 @@
-export interface Student {
+export interface StudentProfile {
   studentId: string;
-  firstName: string;
-  lastName: string;
+  nationalId: string;
+  firstNameTh: string;
+  lastNameTh: string;
   universityEmail: string;
+  personalEmail: string | null;
+  phone: string | null;
+  province: string | null;
+  faculty: string | null;
+  major: string | null;
+  advisor: string | null;
   gpax: number;
   totalCredits: number;
   status: string;
+}
+
+export type Student = StudentProfile;
+
+export interface LoginResponse {
+  message: string;
+  accessToken: string;
+  student: StudentProfile;
 }
 
 export interface Course {
@@ -33,7 +48,7 @@ export interface Registration {
   semester: string;
   regStatus?: string;
   registeredAt?: string;
-  student?: Student;
+  student?: StudentProfile;
   section?: Section;
 }
 

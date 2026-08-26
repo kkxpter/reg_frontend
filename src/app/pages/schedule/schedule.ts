@@ -13,20 +13,11 @@ import { Registration } from '../../models/student.model';
 export class Schedule implements OnInit {
   registrations: Registration[] = []; // เก็บรายวิชาที่ลงทะเบียนจริง
   selectingWithdrawCode: string | null = null; // เก็บสถานะว่ากำลังกดถอนวิชาไหนอยู่
-  currentStudentId: string = '65011212013';
-
+  isLoading = true;
+  errorMessage = '';
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    // 📌 1. ตอนเริ่มหน้านี้ ให้โหลดข้อมูลใหม่ (รีเฟรช) รอบนึงทันที
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedStudent = localStorage.getItem('student');
-      if (savedStudent) {
-        const studentObj = JSON.parse(savedStudent);
-        this.currentStudentId = studentObj.studentId;
-      }
-    }
-
     this.loadMyRegistrations(); // รีเฟรชข้อมูลตอนเริ่มต้น
   }
 
@@ -34,12 +25,14 @@ export class Schedule implements OnInit {
   loadMyRegistrations() {
     this.apiService.getRegistrations().subscribe({
       next: (data: Registration[]) => {
-        // กรองเฉพาะของนิสิตคนที่ Login อยู่ (ถ้า Backend ส่งมาทั้งหมด)
-        this.registrations = data.filter(r => r.studentId === this.currentStudentId);
+        this.registrations = data;
+        this.isLoading = false;
         console.log('Loaded my schedule/registrations:', this.registrations);
       },
       error: () => {
         console.error('Failed to load registrations');
+        this.errorMessage = 'ไม่สามารถโหลดตารางเรียนได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoading = false;
       }
     });
   }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { Course, Section } from '../../models/student.model';
+import { Section } from '../../models/student.model';
 
 @Component({
   selector: 'app-cart',
@@ -16,19 +16,12 @@ export class Cart implements OnInit {
   cart: Section[] = [];     // รายการวิชาที่เลือกไว้ในตะกร้า
   registeredSections: Section[] = []; // รายการวิชาที่เคยลงทะเบียนไปแล้วจริงๆ ใน DB
   searchText: string = '';  // สำหรับช่องค้นหา
-  currentStudentId: string = '65011212013'; // ดึงจากที่ Login ไว้
-
+  isLoadingSections = true;
+  isLoadingRegistrations = true;
+  errorMessage = '';
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedStudent = localStorage.getItem('student');
-      if (savedStudent) {
-        const studentObj = JSON.parse(savedStudent);
-        this.currentStudentId = studentObj.studentId;
-      }
-    }
-
     this.loadSections();
     this.loadMyRegistrations(); // โหลดวิชาที่เคยลงทะเบียนแล้วมาเช็กชนด้วย
   }
@@ -57,9 +50,12 @@ export class Cart implements OnInit {
         }));
 
         console.log('Fixed & Formatted Sections:', this.sections);
+        this.isLoadingSections = false;
       },
       error: (err: any) => {
         console.error('Failed to load sections', err);
+        this.errorMessage = 'ไม่สามารถโหลดรายวิชาที่เปิดสอนได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoadingSections = false;
       }
     });
   }
@@ -70,18 +66,17 @@ export class Cart implements OnInit {
     this.apiService.getRegistrations().subscribe({
       next: (data: any) => {
         console.log('All registrations from DB:', data);
-        console.log('Current Student ID:', this.currentStudentId);
-
-        // 📌 แก้ไขให้กรองเฉพาะรหัสนิสิตปัจจุบันจริงๆ ห้ามมี || true ต่อท้าย
         this.registeredSections = data
-          .filter((item: any) => String(item.studentId) === String(this.currentStudentId))
           .map((item: any) => item.section)
           .filter((sec: any) => sec != null);
 
         console.log('Loaded my actual registered sections:', this.registeredSections);
+        this.isLoadingRegistrations = false;
       },
       error: (err: any) => {
         console.error('Failed to load registrations', err);
+        this.errorMessage = 'ไม่สามารถโหลดรายการลงทะเบียนของคุณได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoadingRegistrations = false;
       }
     });
   }
@@ -207,7 +202,6 @@ export class Cart implements OnInit {
     let successCount = 0;
     this.cart.forEach(sec => {
       const payload = {
-        studentId: this.currentStudentId,
         sectionId: sec.sectionId,
         semester: "1/2569"
       };

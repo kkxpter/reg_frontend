@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import { StudentProfile } from '../../models/student.model';
 
 @Component({
   selector: 'app-profile',
@@ -11,76 +13,42 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './profile.scss',
 })
 export class Profile implements OnInit {
-  currentStudentId: string = '6601234567';
+  student: StudentProfile | null = null;
+  isLoading = true;
+  errorMessage = '';
 
-  // 📌 กำหนดให้รองรับทั้งพิมพ์เล็กและพิมพ์ใหญ่
-  student: any = {
-    studentId: '',
-    nationalId: '',
-    firstNameTh: '',
-    lastNameTh: '',
-    universityEmail: '',
-    personalEmail: '',
-    PersonalEmail: '',
-    phone: '',
-    Phone: '',
-    province: '',
-    Province: '',
-    faculty: '',
-    major: '',
-    advisor: '',
-    year: 'ปี 4 (Senior)',
-    status: 'ปกติ (Active)'
-  };
-
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedStudent = localStorage.getItem('student');
-      if (savedStudent) {
-        const studentObj = JSON.parse(savedStudent);
-        this.currentStudentId = studentObj.studentId || '6601234567';
-      }
-    }
-
+    this.student = this.authService.currentStudent();
     this.loadProfile();
   }
 
   loadProfile() {
-    this.apiService.getStudentProfile(this.currentStudentId).subscribe({
-      next: (data: any) => {
+    this.apiService.getStudentProfile().subscribe({
+      next: (data) => {
         console.log('Profile data loaded from DB:', data);
-        
-        // 📌 ดึงค่าจาก DB มาแปะให้ครบทุกรูปแบบ (ไม่ว่า .NET จะส่งตัวเล็กหรือใหญ่มา)
-        this.student = {
-          ...data,
-          personalEmail: data.personalEmail || data.PersonalEmail || '',
-          PersonalEmail: data.PersonalEmail || data.personalEmail || '',
-          phone: data.phone || data.Phone || '',
-          Phone: data.Phone || data.phone || '',
-          province: data.province || data.Province || '',
-          Province: data.Province || data.province || '',
-          studentId: data.studentId || data.StudentId || '',
-          nationalId: data.nationalId || data.NationalId || '',
-          firstNameTh: data.firstNameTh || data.FirstNameTh || '',
-          lastNameTh: data.lastNameTh || data.LastNameTh || '',
-          universityEmail: data.universityEmail || data.UniversityEmail || '',
-          faculty: data.faculty || data.Faculty || '',
-          major: data.major || data.Major || '',
-          advisor: data.advisor || data.Advisor || '',
-        };
+        this.student = data;
+        this.authService.updateStudent(data);
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('ไม่สามารถโหลดข้อมูลโปรไฟล์ได้', err);
+        this.errorMessage = 'ไม่สามารถโหลดข้อมูลส่วนตัวได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoading = false;
       }
     });
   }
 
   saveProfile() {
+    if (!this.student) return;
     console.log('ปุ่มบันทึกถูกกดแล้ว ข้อมูลที่จะส่ง:', this.student);
 
-    this.apiService.updateStudentProfile(this.currentStudentId, this.student).subscribe({
+    this.apiService.updateStudentProfile({
+      personalEmail: this.student.personalEmail,
+      phone: this.student.phone,
+      province: this.student.province
+    }).subscribe({
       next: () => {
         alert('บันทึกการเปลี่ยนแปลงเรียบร้อยแล้ว');
         this.loadProfile();

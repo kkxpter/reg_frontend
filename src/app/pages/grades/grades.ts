@@ -12,12 +12,13 @@ import { Registration } from '../../models/student.model';
 })
 export class Grades implements OnInit {
   selectedSemester: string = 'current';
-  currentStudentId: string = '65011212013';
 
   // ค่าภาพรวมที่จะคำนวณจาก Database จริง
   gpax: string = '0.00';
   totalCredits: number = 0;
   academicStatus: string = 'ปกติ (Normal)';
+  isLoading = true;
+  errorMessage = '';
 
   // โครงสร้างเทอมทั้งหมด (จะถูกเติมข้อมูลและคำนวณ GPA ประจำภาคให้อัตโนมัติ)
   semestersData = [
@@ -70,21 +71,13 @@ export class Grades implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedStudent = localStorage.getItem('student');
-      if (savedStudent) {
-        const studentObj = JSON.parse(savedStudent);
-        this.currentStudentId = studentObj.studentId;
-      }
-    }
-
     this.loadAllGradesFromDatabase();
   }
 
   loadAllGradesFromDatabase() {
     this.apiService.getRegistrations().subscribe({
       next: (data: Registration[]) => {
-        const myData = data.filter(r => r.studentId === this.currentStudentId);
+        const myData = data;
 
         let sumCredits = 0;
         let sumGradePoints = 0; // สำหรับคำนวณเกรดเฉลี่ย (เกรด * หน่วยกิต)
@@ -182,9 +175,13 @@ export class Grades implements OnInit {
           }
         });
 
+        this.isLoading = false;
+
       },
       error: (err) => {
         console.error('Failed to load grades', err);
+        this.errorMessage = 'ไม่สามารถโหลดผลการเรียนได้ กรุณาลองใหม่อีกครั้ง';
+        this.isLoading = false;
       }
     });
   }
