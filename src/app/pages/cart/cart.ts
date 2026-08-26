@@ -36,7 +36,8 @@ export class Cart implements OnInit {
   loadSections() {
     this.apiService.getSections().subscribe({
       next: (data: any) => {
-        this.sections = data;
+        // 📌 ห่อข้อมูลด้วย section เพื่อให้ HTML ที่เขียนดักไว้ทำงานได้ถูกต้อง
+        this.sections = data.map((item: any) => ({ section: item }));
         console.log('Loaded sections for cart:', this.sections);
       },
       error: (err: any) => {
