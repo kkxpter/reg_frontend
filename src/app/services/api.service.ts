@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  // ใช้ environment หรือถ้าอยู่บน production ให้ดึงจาก Vercel หรือใช้ค่าพื้นฐาน
-private baseUrl = (typeof window !== 'undefined' && (window as any).__env?.apiUrl) || 'https://regbackend-production.up.railway.app/api';
+  // 📌 ใส่ลิงก์ Railway ตรงนี้แบบตรงๆ ไปเลยครับ ชัวร์ที่สุด!
+  private baseUrl = 'https://regbackend-production.up.railway.app/api'; 
 
   constructor(private http: HttpClient) { }
 
@@ -16,37 +16,30 @@ private baseUrl = (typeof window !== 'undefined' && (window as any).__env?.apiUr
     return this.http.post(`${this.baseUrl}/auth/login`, credentials);
   }
 
-  // ดึงรายวิชาเปิดสอนทั้งหมด (แก้ไขจาก apiUrl เป็น baseUrl)
   getSections() {
     return this.http.get(`${this.baseUrl}/sections`);
   }
 
-  // ดึงรายวิชาหลักทั้งหมด (แก้ไขจาก apiUrl เป็น baseUrl)
   getCourses() {
     return this.http.get(`${this.baseUrl}/courses`);
   }
 
-  // ลงทะเบียนเรียน
   registerCourse(data: { studentId: string; sectionId: number; semester: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/registrations`, data);
   }
 
-  // ดึงประวัติและข้อมูลการลงทะเบียนทั้งหมด
   getRegistrations(): Observable<any> {
     return this.http.get(`${this.baseUrl}/registrations`);
   }
 
-  // ลบการลงทะเบียนเรียน (ถอนรายวิชา)
   deleteRegistration(regId: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/registrations/${regId}`);
   }
 
-  // ดึงข้อมูลโปรไฟล์นักศึกษาตามรหัสนิสิต
   getStudentProfile(studentId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/students/${studentId}`);
   }
 
-  // อัปเดตข้อมูลโปรไฟล์นักศึกษา
   updateStudentProfile(studentId: string, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/students/${studentId}`, data);
   }
