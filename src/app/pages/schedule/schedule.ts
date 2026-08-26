@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { Registration } from '../../models/student.model';
 
@@ -11,14 +11,26 @@ import { Registration } from '../../models/student.model';
   styleUrl: './schedule.scss',
 })
 export class Schedule implements OnInit {
-  registrations: Registration[] = []; // เก็บรายวิชาที่ลงทะเบียนจริง
-  selectingWithdrawCode: string | null = null; // เก็บสถานะว่ากำลังกดถอนวิชาไหนอยู่
+  registrations: Registration[] = []; 
+  selectingWithdrawCode: string | null = null; 
   isLoading = true;
   errorMessage = '';
-  constructor(private apiService: ApiService) {}
 
+  // 📌 มี Constructor แค่อันเดียวพอนะครับ
+  constructor(
+    private apiService: ApiService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  // 📌 มี ngOnInit แค่อันเดียวพอเช่นกัน
   ngOnInit(): void {
-    this.loadMyRegistrations(); // รีเฟรชข้อมูลตอนเริ่มต้น
+    this.loadMyRegistrations();
+  }
+
+  printSchedule() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.print();
+    }
   }
 
   // โหลดรายการที่ลงทะเบียน
@@ -179,4 +191,5 @@ export class Schedule implements OnInit {
     const matches = scheduleTime.match(/- (\d{2}):00/);
     return matches ? parseInt(matches[1], 10) : 8;
   }
+  
 }

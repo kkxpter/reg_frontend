@@ -17,7 +17,7 @@
         <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
         หน่วยกิตสะสมเทอมนี้: <span class="text-blue-600 font-bold text-base">{{ totalCredits }} นก.</span>
       </span>
-      <button onclick="window.print()" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-2xl font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+      <button (click)="printSchedule()" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-2xl font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
         พิมพ์ตารางเรียน (PDF)
       </button>
     </div>
