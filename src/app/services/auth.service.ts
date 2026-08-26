@@ -15,7 +15,10 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   login(credentials: { studentId: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/login`, credentials).pipe(
+    // 📌 ใส่ลิงก์ Render ตรงนี้แบบชัดเจนไปเลย
+    const apiUrl = 'https://reg-backend-iv70.onrender.com/api/auth/login';
+    
+    return this.http.post<LoginResponse>(apiUrl, credentials).pipe(
       tap(response => this.setSession(response.accessToken, response.student))
     );
   }
