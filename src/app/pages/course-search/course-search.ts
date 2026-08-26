@@ -25,12 +25,13 @@ export class CourseSearch implements OnInit {
     this.loadSections();
   }
 
- loadSections() {
+  loadSections() {
+    // 📌 เปลี่ยนมาเรียก API ที่ดึงข้อมูล Sections หรือ Courses ทั้งหมด
+    // (ลองเช็กดูว่าใน api.service.ts ของพี่ใช้ชื่อฟังก์ชันว่าอะไร เช่น getSections() หรือ getAllSections())
     this.apiService.getSections().subscribe({
       next: (data: any) => {
-        // 📌 บันทึกข้อมูลลง sections ตรงๆ เลย
-        this.sections = data; 
-        console.log('Loaded sections formatted:', this.sections);
+        this.sections = data.map((item: any) => ({ section: item }));
+        console.log('Loaded sections:', data);
       },
       error: (err: any) => {
         console.error('Failed to load sections', err);
