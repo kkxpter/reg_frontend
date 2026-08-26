@@ -36,9 +36,27 @@ export class Cart implements OnInit {
   loadSections() {
     this.apiService.getSections().subscribe({
       next: (data: any) => {
-        // 📌 ต้องเก็บข้อมูลลง this.sections ตรงๆ ห้ามห่อด้วย { section: item }
-        this.sections = data; 
-        console.log('Loaded sections for cart:', this.sections);
+        // แปลงฟิลด์จากหลังบ้านให้รองรับทั้งตัวพิมพ์เล็กและพิมพ์ใหญ่แบบอัตโนมัติ
+        this.sections = data.map((item: any) => ({
+          sectionId: item.sectionId || item.SectionId,
+          courseCode: item.courseCode || item.CourseCode,
+          secNo: item.secNo || item.SecNo,
+          scheduleTime: item.scheduleTime || item.ScheduleTime,
+          instructor: item.instructor || item.Instructor,
+          capacity: item.capacity || item.Capacity,
+          enrolled: item.enrolled || item.Enrolled,
+          course: item.course ? {
+            courseCode: item.course.courseCode || item.course.CourseCode,
+            courseName: item.course.courseName || item.course.CourseName,
+            credits: item.course.credits || item.course.Credits
+          } : (item.Course ? {
+            courseCode: item.Course.CourseCode,
+            courseName: item.Course.CourseName,
+            credits: item.Course.Credits
+          } : null)
+        }));
+
+        console.log('Fixed & Formatted Sections:', this.sections);
       },
       error: (err: any) => {
         console.error('Failed to load sections', err);
