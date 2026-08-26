@@ -14,7 +14,7 @@ import { Course } from '../../models/student.model';
 export class Dashboard implements OnInit {
   student: any = null; 
   courses: Course[] = [];
-  currentStudentId: string = '65011212013'; 
+  currentStudentId: string = ''; // 📌 ไม่ต้องฟิกค่าตายตัวแล้ว
 
   constructor(private apiService: ApiService) {}
 
@@ -24,15 +24,19 @@ export class Dashboard implements OnInit {
       if (savedStudent) {
         try {
           const studentObj = JSON.parse(savedStudent);
-          this.currentStudentId = studentObj.studentId || studentObj.StudentId || this.currentStudentId;
+          // ดึงรหัสนิสิตจริงของคนที่เพิ่ง Login เข้ามา
+          this.currentStudentId = studentObj.studentId || studentObj.StudentId || '';
         } catch (e) {
           console.error('Error parsing saved student', e);
         }
       }
     }
 
+    // ถ้ามีรหัสนิสิต ให้ยิงไปดึงข้อมูลล่าสุดจาก Database ทันที
     if (this.currentStudentId) {
       this.loadStudentProfile();
+    } else {
+      console.warn('ไม่พบรหัสนิสิตในระบบ กรุณาเข้าสู่ระบบใหม่อีกครั้ง');
     }
 
     this.apiService.getCourses().subscribe({
@@ -50,12 +54,12 @@ export class Dashboard implements OnInit {
       next: (data: any) => {
         console.log('Dashboard profile loaded from Database:', data);
         
-        // 📌 ดึงฟิลด์ major / Major / majorTh จาก DB มาแสดงผลจริง
+        // 📌 ดึงข้อมูลจริงจาก Database มาแสดงผลแบบไดนามิก
         this.student = {
           studentId: data.studentId || data.StudentId || this.currentStudentId,
           firstName: data.firstName || data.FirstName || data.firstNameTh || data.FirstNameTh || '',
-          lastName: data.lastName || data.LastName || data.lastNameTh || data.lastNameTh || '',
-          major: data.major || data.Major || data.majorTh || data.MajorTh || 'วิทยาการคอมพิวเตอร์', // ดึงจาก DB
+          lastName: data.lastName || data.LastName || data.lastNameTh || data.LastNameTh || '',
+          major: data.major || data.Major || data.majorTh || data.MajorTh || 'วิทยาการคอมพิวเตอร์',
           status: data.status || data.Status || 'ปกติ (Active)',
           advisor: data.advisor || data.Advisor || 'ดร. สมชาย ใจดี'
         };
