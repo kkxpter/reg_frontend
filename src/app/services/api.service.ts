@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  // 📌 ใส่ลิงก์ Railway ตรงนี้แบบตรงๆ ไปเลยครับ ชัวร์ที่สุด!
-  private baseUrl = 'https://regbackend-production.up.railway.app/api'; 
+
+  private baseUrl = 'https://reg-backend-iv70.onrender.com'; 
 
   constructor(private http: HttpClient) { }
 
